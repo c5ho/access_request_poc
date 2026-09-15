@@ -108,7 +108,6 @@ def main():
         st.error(status_label)
     else:
         st.warning(status_label)
-    st.json(decision)
     st.write(f"Confidence: {result.get('confidence')}")
     st.write(f"Needs human review: {result.get('needs_human_review')}")
 
