@@ -48,6 +48,9 @@ cd /home/labber/projects/access_request_poc
 python scripts/generate_pdfs.py
 ```
 
+Each `.txt` sample produces three PDFs at different simulated scan quality levels, for testing OCR/IDP
+robustness: `name.pdf` (high/crisp), `name_medium.pdf`, and `name_low.pdf` (noisy, blurred, skewed).
+
 Run the CLI on a text file:
 
 ```bash
@@ -93,10 +96,11 @@ This repo includes a sample `cloudbuild.yaml` (Cloud Build) and a GitHub Actions
 
 To use GitHub Actions:
 
-1. Create a GCP service account with roles: `roles/run.admin`, `roles/storage.admin`, `roles/cloudbuild.builds.editor`, `roles/secretmanager.secretAccessor`.
-2. Create a JSON key for the service account and add it to GitHub Secrets as `GCP_SA_KEY`.
-3. Add `GCP_PROJECT` secret with your project id.
-4. Push to `main` — the workflow will run tests, build an image, and deploy to Cloud Run.
+1. Create a GCP service account with roles: `roles/run.admin`, `roles/storage.admin`, `roles/cloudbuild.builds.editor`, `roles/secretmanager.secretAccessor`, `roles/logging.viewer`, `roles/viewer`.
+2. Grant that service account `roles/iam.serviceAccountUser` on itself, and on the default compute service account (`PROJECT_NUMBER-compute@developer.gserviceaccount.com`) — both are needed for Cloud Build to run and for the Cloud Run deploy to act as that service account.
+3. Create a JSON key for the service account and add it to GitHub Secrets as `GCP_SA_KEY`.
+4. Add `GCP_PROJECT` secret with your project id.
+5. Push to `main` — the workflow will run tests, build an image, and deploy to Cloud Run.
 
 `GCP_SA_KEY` and `GCP_PROJECT` are already configured as repo secrets for this project.
 
