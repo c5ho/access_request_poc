@@ -41,7 +41,21 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT }}
       - name: Build and push image
         run: |
-          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT }}/access-request-poc:latest
+          set -e
+          BUILD_ID=$(gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT }}/access-request-poc:latest --async --format="value(id)")
+          echo "Submitted build $BUILD_ID"
+          # Poll instead of relying on gcloud's log-streaming, which flakes out on this runner.
+          for i in $(seq 1 60); do
+            STATUS=$(gcloud builds describe "$BUILD_ID" --format="value(status)")
+            echo "Build status: $STATUS"
+            case "$STATUS" in
+              SUCCESS) exit 0 ;;
+              FAILURE|INTERNAL_ERROR|TIMEOUT|CANCELLED|EXPIRED) exit 1 ;;
+            esac
+            sleep 10
+          done
+          echo "Timed out waiting for build to finish"
+          exit 1
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy access-request-poc \
