@@ -99,7 +99,16 @@ def main():
         start_date = st.text_input("Start Date", value=req.get("start_date") or "")
 
     st.subheader("Decision")
-    st.write(result.get("decision", {}))
+    decision = result.get("decision", {})
+    status = decision.get("status")
+    status_label = f"{status} ({decision.get('reason', 'n/a')})"
+    if status == "APPROVE":
+        st.success(status_label)
+    elif status == "REJECT":
+        st.error(status_label)
+    else:
+        st.warning(status_label)
+    st.json(decision)
     st.write(f"Confidence: {result.get('confidence')}")
     st.write(f"Needs human review: {result.get('needs_human_review')}")
 
@@ -136,7 +145,7 @@ def main():
     st.subheader("Past Reviews")
     reviews = list_reviews()
     for r in reversed(reviews[-10:]):
-        st.write(r)
+        st.json(r)
 
 
 if __name__ == "__main__":
