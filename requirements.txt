@@ -1,0 +1,9 @@
+pytest==8.3.3
+pytesseract
+Pillow
+reportlab
+pdf2image
+streamlit
+google-cloud-storage
+google-cloud-secret-manager
+google-cloud-documentai

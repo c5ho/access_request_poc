@@ -1,0 +1,10 @@
+Employee ID: E-2001
+First Name: Alice
+Last Name: Smith
+Department: Finance
+Job Title: Senior Analyst
+Requested Role: Finance Analyst
+Manager Approved: Yes
+Start Date: 2026-11-01
+End Date: 2026-12-31
+Reason: Support monthly close
