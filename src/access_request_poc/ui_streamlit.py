@@ -1,6 +1,6 @@
 import streamlit as st
 from pathlib import Path
-from .pipeline import process_file, process_text_request
+from .pipeline import process_file
 from . import ocr
 from .reviewer_store import save_review, list_reviews
 from .ui_helpers import render_highlighted_image
@@ -57,18 +57,8 @@ def main():
         text = ocr.ocr_pdf(str(file_path))
         if not text:
             st.warning("OCR not available or failed for this PDF.")
-            text = ""
-        st.text_area("ocr", text, height=200)
-        if text:
-            result = process_text_request(text)
-        else:
-            result = {
-                "request": {},
-                "decision": {"status": "NEEDS_REVIEW", "reason": "ocr_unavailable"},
-                "confidence": 0.0,
-                "needs_human_review": True,
-                "summary": {},
-            }
+        st.text_area("ocr", text or "", height=200)
+        result = process_file(str(file_path))
 
     # Attempt to display highlighted image if annotations exist
     if meta_path.exists():

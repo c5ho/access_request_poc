@@ -1,5 +1,6 @@
 from typing import Optional
 import os
+import sys
 
 try:
     import pytesseract
@@ -39,20 +40,24 @@ def _documentai_extract(path: str) -> Optional[str]:
     if not project or not processor:
         return None
 
-    client = documentai.DocumentProcessorServiceClient()
-    name = client.processor_path(project, "us", processor)
+    try:
+        client = documentai.DocumentProcessorServiceClient()
+        name = client.processor_path(project, "us", processor)
 
-    with open(path, "rb") as f:
-        doc_bytes = f.read()
+        with open(path, "rb") as f:
+            doc_bytes = f.read()
 
-    raw_doc = documentai.RawDocument(content=doc_bytes, mime_type="application/pdf")
-    request = documentai.ProcessRequest(name=name, raw_document=raw_doc)
-    result = client.process_document(request=request)
-    document = result.document
+        raw_doc = documentai.RawDocument(content=doc_bytes, mime_type="application/pdf")
+        request = documentai.ProcessRequest(name=name, raw_document=raw_doc)
+        result = client.process_document(request=request)
+        document = result.document
 
-    # Concatenate text from text_segments
-    text = document.text or ""
-    return text
+        # Concatenate text from text_segments
+        text = document.text or ""
+        return text
+    except Exception as e:
+        print(f"Document AI extraction failed for {path}: {e}", file=sys.stderr)
+        return None
 
 
 def ocr_pdf(path: str) -> Optional[str]:
@@ -77,9 +82,14 @@ def ocr_pdf(path: str) -> Optional[str]:
     if pytesseract is None or Image is None:
         return None
 
-    pages = convert_from_path(path)
-    texts = []
-    for p in pages:
-        texts.append(pytesseract.image_to_string(p))
+    try:
+        pages = convert_from_path(path)
+        texts = []
+        for p in pages:
+            texts.append(pytesseract.image_to_string(p))
 
-    return "\n".join(texts)
+        return "\n".join(texts)
+    except Exception as e:
+        # Corrupt/unreadable PDF, missing poppler binaries at runtime, etc.
+        print(f"Local OCR failed for {path}: {e}", file=sys.stderr)
+        return None
