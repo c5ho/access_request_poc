@@ -1,0 +1,96 @@
+{
+  "source": "sample_request_1.txt",
+  "quality": "medium",
+  "annotations": [
+    {
+      "field": "employee_id",
+      "bbox": [
+        40,
+        738.0,
+        520,
+        752.0
+      ]
+    },
+    {
+      "field": "first_name",
+      "bbox": [
+        40,
+        724.0,
+        520,
+        738.0
+      ]
+    },
+    {
+      "field": "last_name",
+      "bbox": [
+        40,
+        710.0,
+        520,
+        724.0
+      ]
+    },
+    {
+      "field": "department",
+      "bbox": [
+        40,
+        696.0,
+        520,
+        710.0
+      ]
+    },
+    {
+      "field": "job_title",
+      "bbox": [
+        40,
+        682.0,
+        520,
+        696.0
+      ]
+    },
+    {
+      "field": "requested_role",
+      "bbox": [
+        40,
+        668.0,
+        520,
+        682.0
+      ]
+    },
+    {
+      "field": "manager_approved",
+      "bbox": [
+        40,
+        654.0,
+        520,
+        668.0
+      ]
+    },
+    {
+      "field": "start_date",
+      "bbox": [
+        40,
+        640.0,
+        520,
+        654.0
+      ]
+    },
+    {
+      "field": "end_date",
+      "bbox": [
+        40,
+        626.0,
+        520,
+        640.0
+      ]
+    },
+    {
+      "field": "reason",
+      "bbox": [
+        40,
+        612.0,
+        520,
+        626.0
+      ]
+    }
+  ]
+}
