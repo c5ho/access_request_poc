@@ -98,6 +98,8 @@ To use GitHub Actions:
 3. Add `GCP_PROJECT` secret with your project id.
 4. Push to `main` — the workflow will run tests, build an image, and deploy to Cloud Run.
 
+`GCP_SA_KEY` and `GCP_PROJECT` are already configured as repo secrets for this project.
+
 To use Cloud Build directly:
 
 1. Push the repo and run:
