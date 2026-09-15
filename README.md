@@ -22,6 +22,9 @@ Build a lightweight prototype that:
 - `data/` contains synthetic request examples and the roles catalog
 - `tests/` contains regression tests for validation logic
 
+All sample files in `data/samples/` are selectable from the Streamlit reviewer UI's "Sample file"
+dropdown.
+
 ## Running the demo
 
 ```bash
@@ -50,6 +53,10 @@ python scripts/generate_pdfs.py
 
 Each `.txt` sample produces three PDFs at different simulated scan quality levels, for testing OCR/IDP
 robustness: `name.pdf` (high/crisp), `name_medium.pdf`, and `name_low.pdf` (noisy, blurred, skewed).
+
+`data/samples/sample_request_1_corrupt.pdf` is a deliberately truncated/unreadable PDF, included to
+exercise the failure path: OCR/extraction errors are caught and degrade to a `NEEDS_REVIEW` decision
+(`ocr_unavailable` or `processing_error`) instead of crashing the app.
 
 Run the CLI on a text file:
 
