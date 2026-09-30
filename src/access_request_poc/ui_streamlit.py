@@ -60,19 +60,23 @@ def main():
         st.text_area("ocr", text or "", height=200)
         result = process_file(str(file_path))
 
-    # Attempt to display highlighted image if annotations exist
-    if meta_path.exists():
+    # Attempt to display highlighted image if annotations exist (PDF only; the
+    # .meta.json annotations reference PDF page coordinates, not the .txt source)
+    pdf_for_preview = file_path if file_path.suffix.lower() == ".pdf" else file_path.with_suffix(".pdf")
+    if meta_path.exists() and pdf_for_preview.exists():
         try:
             import json
 
             meta = json.loads(meta_path.read_text(encoding="utf-8"))
             ann = meta.get("annotations", [])
-            img = render_highlighted_image(str(file_path), ann)
+            img = render_highlighted_image(str(pdf_for_preview), ann)
             if img is not None:
                 st.subheader("Highlighted fields")
                 st.image(img)
-        except Exception:
-            pass
+            else:
+                st.info("Highlighted preview unavailable (pdf2image/poppler not installed).")
+        except Exception as e:
+            st.warning(f"Could not render highlighted preview: {e}")
 
     st.subheader("Extracted Fields")
     req = result.get("request", {})
@@ -133,8 +137,24 @@ def main():
 
     st.subheader("Past Reviews")
     reviews = list_reviews()
+    action_icons = {"APPROVE": "✅", "REJECT": "❌", "ESCALATE": "⚠️"}
     for r in reversed(reviews[-10:]):
-        st.json(r)
+        action = r.get("action", "?")
+        icon = action_icons.get(action, "•")
+        title = f"{icon} {r.get('timestamp', '')} — {r.get('file', '')} — {action} by {r.get('reviewer', '?')}"
+        with st.expander(title):
+            cols = st.columns(2)
+            with cols[0]:
+                st.write(f"**Reviewer:** {r.get('reviewer', '-')} ({r.get('reviewer_role', '-')})")
+                pipeline_decision = r.get("pipeline_decision") or {}
+                st.write(f"**Pipeline decision:** {pipeline_decision.get('status', '-')}")
+                st.write(f"**Confidence:** {r.get('confidence', '-')}")
+            with cols[1]:
+                st.write(f"**Comment:** {r.get('comment') or '_none_'}")
+            extracted = r.get("extracted") or {}
+            if extracted:
+                st.write("**Extracted fields:**")
+                st.table(extracted)
 
 
 if __name__ == "__main__":
